@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="cn.itcast.oa.domain">
+
+    <class name="Shoufei" table="itcast_shoufei">
+        <id name="id">
+            <generator class="native"/>
+        </id>
+        <property name="title"/>
+        <property name="addtime"/>
+        <property name="userid"/>
+        <property name="tel"/>
+        <property name="price"/>
+        <property name="state"/>
+        <property name="text"/>
+        <property name="cid"/>
+        <property name="cname"/>
+    </class>
+
+</hibernate-mapping>

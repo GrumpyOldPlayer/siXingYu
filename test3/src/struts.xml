@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+    <!-- 配置为开发模式 -->
+    <constant name="struts.devMode" value="true"/>
+    <!-- 把扩展名配置为action -->
+    <constant name="struts.action.extension" value="action"/>
+    <!-- 把主题配置为simple -->
+    <constant name="struts.ui.theme" value="simple"/>
+    <constant name="struts.multipart.maxSize" value="1000000000"/>
+    <package name="default" namespace="/" extends="struts-default">
+
+        <interceptors>
+            <!-- 声明拦截器 -->
+            <interceptor name="checkPrivilege" class="cn.itcast.oa.util.CheckPrivilegeInterceptor"></interceptor>
+
+            <!-- 重新定义默认的拦截器栈 -->
+            <interceptor-stack name="defaultStack">
+                <interceptor-ref name="checkPrivilege"></interceptor-ref>
+                <interceptor-ref name="defaultStack"></interceptor-ref>
+            </interceptor-stack>
+        </interceptors>
+
+
+        <!-- 全局的Result配置 -->
+        <global-results>
+            <result name="loginUI">/WEB-INF/jsp/userAction/loginUI.jsp</result>
+            <result name="noPrivilegeError">/noPrivilegeError.jsp</result>
+        </global-results>
+
+
+        <!-- 配置测试用的Action，未与Spring整合，class属性写类的全名 -->
+        <!-- 当Struts2与Spring整合后，class属性可以写bean的名称 -->
+        <action name="test" class="testAction">
+            <result name="success">/test.jsp</result>
+        </action>
+        <action name="index_*" class="indexAction" method="{1}">
+            <result name="index">/uindex.jsp</result>
+        </action>
+
+        <!-- 岗位管理 -->
+        <action name="role_*" class="roleAction" method="{1}">
+            <result name="list">/WEB-INF/jsp/roleAction/list.jsp</result>
+            <result name="saveUI">/WEB-INF/jsp/roleAction/saveUI.jsp</result>
+            <result name="setPrivilegeUI">/WEB-INF/jsp/roleAction/setPrivilegeUI.jsp</result>
+            <result name="toList" type="redirectAction">role_list</result>
+        </action>
+
+        <!-- 岗位管理 -->
+        <action name="ct_*" class="categoryAction" method="{1}">
+            <result name="list">/WEB-INF/jsp/categoryAction/list.jsp</result>
+            <result name="saveUI">/WEB-INF/jsp/categoryAction/saveUI.jsp</result>
+            <result name="editUI">/WEB-INF/jsp/categoryAction/editUI.jsp</result>
+            <result name="toList" type="redirectAction">ct_list</result>
+        </action>
+
+
+        <action name="infos_*" class="infosAction" method="{1}">
+            <result name="downdone" type="stream">
+                <param name="inputName">fileinputStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}"</param>
+                <param name="contentType">application/octet-stream</param>
+                <param name="bufferSize">4096000</param>
+            </result>
+            <interceptor-ref name="fileUpload">
+                <param name="maximumSize">409600</param>
+            </interceptor-ref>
+            <interceptor-ref name="defaultStack"></interceptor-ref>
+            <result name="list">/WEB-INF/jsp/infosAction/list.jsp</result>
+            <result name="saveUI">/WEB-INF/jsp/infosAction/saveUI.jsp</result>
+            <result name="editUI">/WEB-INF/jsp/infosAction/editUI.jsp</result>
+            <result name="uaddUI">/infosAdd.jsp</result>
+            <result name="toList" type="redirectAction">infos_list</result>
+        </action>
+
+
+        <!--测试Excel下载-->
+        <action name="exportExcel_*" class="excelExportAction" method="{1}">
+            <result name="success" type="stream">
+                <!-- 下载文件的类型，如果你不知道是什么格式，可以去 tomcat\conf\web.xml下找 -->
+                <param name="contentType">application/vnd.ms-excel,charset=ISO8859-1</param>
+                <!-- 返回流 excelStream为action中的流变量名称 -->
+                <param name="inputName">excelStream</param>
+                <!-- attachment 这个位置的参数挺特殊的，可以设置成下载时，是否出现个下载提示框，或者直接下载之类的。  
+                fileName指定生成的文件名字(适合动态生成文件名，比如做报表时，一般都要说是几月的统计数据之类)为action中变量-->
+                <param name="contentDisposition">
+                    attachment;filename=${excelFileName}
+                </param>
+                <param name="bufferSize">1024</param>
+            </result>
+        </action>
+
+        <action name="sf_*" class="shoufeiAction" method="{1}">
+            <result name="list">/WEB-INF/jsp/shoufeiAction/list.jsp</result>
+            <result name="saveUI">/WEB-INF/jsp/shoufeiAction/saveUI.jsp</result>
+            <result name="editUI">/WEB-INF/jsp/shoufeiAction/editUI.jsp</result>
+            <result name="toList" type="redirectAction">sf_list</result>
+        </action>
+
+
+        <action name="mf_*" class="mianfeiAction" method="{1}">
+            <result name="list">/WEB-INF/jsp/mianfeiAction/list.jsp</result>
+            <result name="saveUI">/WEB-INF/jsp/mianfeiAction/saveUI.jsp</result>
+            <result name="editUI">/WEB-INF/jsp/mianfeiAction/editUI.jsp</result>
+            <result name="uaddUI">/infosAdd.jsp</result>
+            <result name="toindex" type="redirectAction">index_index</result>
+            <result name="toList" type="redirectAction">mf_list</result>
+        </action>
+
+        <!-- 部门管理 -->
+        <action name="department_*" class="departmentAction" method="{1}">
+            <result name="list">/WEB-INF/jsp/departmentAction/list.jsp</result>
+            <result name="saveUI">/WEB-INF/jsp/departmentAction/saveUI.jsp</result>
+            <result name="toList" type="redirectAction">department_list?parentId=${parentId}</result>
+        </action>
+
+
+        <!-- 用户管理 -->
+        <action name="user_*" class="userAction" method="{1}">
+            <result name="list">/WEB-INF/jsp/userAction/list.jsp</result>
+            <result name="saveUI">/WEB-INF/jsp/userAction/saveUI.jsp</result>
+            <result name="toList" type="redirectAction">user_list</result>
+            <result name="one">/WEB-INF/jsp/userAction/oneUI.jsp</result>
+            <result name="oneUserU" type="redirectAction">user_one</result>
+            <result name="onexiaoxilist">/WEB-INF/jsp/userAction/onexiaoxinlist.jsp</result>
+            <result name="onesflist">/WEB-INF/jsp/userAction/onesflist.jsp</result>
+            <result name="oneeditUI">/WEB-INF/jsp/userAction/oneeditUI.jsp</result>
+            <result name="onesfeditUI">/WEB-INF/jsp/userAction/onesfeditUI.jsp</result>
+
+            <result name="mfinfos">/mfinfos.jsp</result>
+            <result name="sfinfos">/sfinfos.jsp</result>
+
+            <result name="logout">/WEB-INF/jsp/userAction/logout.jsp</result>
+            <result name="toIndex" type="redirect">/index.jsp</result>
+        </action>
+
+
+        <!-- 首页 -->
+        <action name="home_*" class="homeAction" method="{1}">
+            <result name="{1}">/WEB-INF/jsp/homeAction/{1}.jsp</result>
+        </action>
+
+
+        <!-- 论坛：版块管理 -->
+        <action name="forumManage_*" class="forumManageAction" method="{1}">
+            <result name="list">/WEB-INF/jsp/forumManageAction/list.jsp</result>
+            <result name="saveUI">/WEB-INF/jsp/forumManageAction/saveUI.jsp</result>
+            <result name="toList" type="redirectAction">forumManage_list</result>
+        </action>
+
+
+    </package>
+
+    <!-- Add packages here -->
+
+</struts>
